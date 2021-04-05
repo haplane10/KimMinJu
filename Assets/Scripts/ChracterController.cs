@@ -10,6 +10,9 @@ public class ChracterController : MonoBehaviour
     [SerializeField] new Rigidbody2D rigidbody;
     [SerializeField] float jumpPower;
     [SerializeField] float speed;
+    [SerializeField] GameObject fireballPrefab;
+    [SerializeField] Transform fireballSpawner;
+
     bool isGround = false;
 
     private void Awake()
@@ -25,19 +28,15 @@ public class ChracterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            animator.SetInteger("animIdx", 2);
-        }
-
-        if (Input.GetKeyUp(KeyCode.A))
-        {
-            animator.SetInteger("animIdx", 0);
-        }
-
         if (Input.GetKeyDown(KeyCode.Z))
         {
             animator.SetTrigger("attack");
+        }
+
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            animator.SetTrigger("fireball");
+       //     Invoke("SpawnFireball", 0.4f);
         }
 
         if (isGround && Input.GetKeyDown(KeyCode.Space))
@@ -48,17 +47,32 @@ public class ChracterController : MonoBehaviour
         rigidbody.AddRelativeForce(Physics2D.gravity / 1.5f);
     }
 
+    public void SpawnFireball()
+    {
+        var fireball = GameObject.Instantiate(fireballPrefab, fireballSpawner);
+        fireball.transform.SetParent(null);
+        Destroy(fireball, 5f);
+    }
+
     private void FixedUpdate()
     {
         if (Input.GetKey(KeyCode.LeftArrow))
         {
+            animator.SetInteger("animIdx", 2);
             rigidbody.velocity = new Vector2(-speed, rigidbody.velocity.y);
+            transform.localScale = new Vector3(-1, 1, 1);
+            return;
         }
 
         if (Input.GetKey(KeyCode.RightArrow))
         {
+            animator.SetInteger("animIdx", 2);
             rigidbody.velocity = new Vector2(speed, rigidbody.velocity.y);
+            transform.localScale = new Vector3(1, 1, 1);
+            return;
         }
+
+        animator.SetInteger("animIdx", 0);
     }
 
     public void OnWalkButtonClick(int idx)
